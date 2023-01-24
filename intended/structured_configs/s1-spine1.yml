@@ -1,0 +1,194 @@
+router_bgp:
+  as: '65101'
+  router_id: 10.0.0.1
+  bgp_defaults:
+  - no bgp default ipv4-unicast
+  - distance bgp 20 200 200
+  - maximum-paths 4 ecmp 4
+  peer_groups:
+    IPv4-UNDERLAY-PEERS:
+      type: ipv4
+      maximum_routes: 12000
+      send_community: all
+    EVPN-OVERLAY-PEERS:
+      type: evpn
+      update_source: Loopback0
+      bfd: true
+      ebgp_multihop: '3'
+      send_community: all
+      maximum_routes: 0
+      next_hop_unchanged: true
+  address_family_ipv4:
+    peer_groups:
+      IPv4-UNDERLAY-PEERS:
+        activate: true
+      EVPN-OVERLAY-PEERS:
+        activate: false
+  redistribute_routes:
+    connected:
+      route_map: RM-CONN-2-BGP
+  neighbors:
+    10.1.2.1:
+      peer_group: IPv4-UNDERLAY-PEERS
+      remote_as: '65111'
+      description: s1-leaf1_Ethernet2
+    10.1.2.9:
+      peer_group: IPv4-UNDERLAY-PEERS
+      remote_as: '65111'
+      description: s1-leaf2_Ethernet2
+    10.1.2.17:
+      peer_group: IPv4-UNDERLAY-PEERS
+      remote_as: '65112'
+      description: s1-leaf3_Ethernet2
+    10.1.2.25:
+      peer_group: IPv4-UNDERLAY-PEERS
+      remote_as: '65112'
+      description: s1-leaf4_Ethernet2
+    10.1.2.33:
+      peer_group: IPv4-UNDERLAY-PEERS
+      remote_as: '65113'
+      description: s1-brdr1_Ethernet2
+    10.1.2.41:
+      peer_group: IPv4-UNDERLAY-PEERS
+      remote_as: '65113'
+      description: s1-brdr2_Ethernet2
+    10.1.3.5:
+      peer_group: EVPN-OVERLAY-PEERS
+      description: s1-brdr1
+      remote_as: '65113'
+    10.1.3.6:
+      peer_group: EVPN-OVERLAY-PEERS
+      description: s1-brdr2
+      remote_as: '65113'
+    10.1.3.1:
+      peer_group: EVPN-OVERLAY-PEERS
+      description: s1-leaf1
+      remote_as: '65111'
+    10.1.3.2:
+      peer_group: EVPN-OVERLAY-PEERS
+      description: s1-leaf2
+      remote_as: '65111'
+    10.1.3.3:
+      peer_group: EVPN-OVERLAY-PEERS
+      description: s1-leaf3
+      remote_as: '65112'
+    10.1.3.4:
+      peer_group: EVPN-OVERLAY-PEERS
+      description: s1-leaf4
+      remote_as: '65112'
+  address_family_evpn:
+    peer_groups:
+      EVPN-OVERLAY-PEERS:
+        activate: true
+static_routes:
+- vrf: default
+  destination_address_prefix: 0.0.0.0/0
+  gateway: 192.168.0.1
+service_routing_protocols_model: multi-agent
+ip_routing: true
+vlan_internal_order:
+  allocation: ascending
+  range:
+    beginning: 1006
+    ending: 1199
+spanning_tree:
+  mode: none
+local_users:
+  arista:
+    privilege: 15
+    role: network-admin
+    sha512_password: $6$4FFVdsOX/1WIH/86$6eYwOGBNE5x4AMFE0CEujICWTJy4kc3jNGGg6GP9PbWcNgGhxHC9rscfjf3d3f797GYpVGaugiUSEmfhVWxls0
+    ssh_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC1yElfRotgcSgF1qY7G3bYOL/M/D3a72Tnrw24FoW58JiPlxCRw+2YofecauC4JimjbBCJobmnnjCBxzwRY64yAXRPd6ChBtqfqXpPbrpnfpcMHIqAyam2FC8t0HgWu5W6iOFvWpjgHKN8UzC3nSyNLMt/x/LYI4uKs1KIn+jIkBumS06VhOtdhUf+zcaj6waTGg1ugr0vWW+a8Reo9bu90ku6dn96/ABgRA+ldA7c1NIeAl6MQUpaWjtsXX/1BDckABJgJf9ZWIRqBaTcJnVjvhmt7T6GO3BKYVX/ykwZu1lQjkqftCY737rIhUAu5fypEegm3GO8tjsRTwuOU3rx
+      arista@bnc-rolex-1-085e5ba3-eos
+vrfs:
+  default:
+    ip_routing: false
+management_interfaces:
+  Management0:
+    description: oob_management
+    shutdown: false
+    vrf: default
+    ip_address: 192.168.0.10/24
+    gateway: 192.168.0.1
+    type: oob
+management_api_http:
+  enable_vrfs:
+    default: {}
+  enable_https: true
+ethernet_interfaces:
+  Ethernet2:
+    peer: s1-leaf1
+    peer_interface: Ethernet2
+    peer_type: l3leaf
+    description: P2P_LINK_TO_S1-LEAF1_Ethernet2
+    mtu: 9000
+    type: routed
+    shutdown: false
+    ip_address: 10.1.2.0/31
+  Ethernet3:
+    peer: s1-leaf2
+    peer_interface: Ethernet2
+    peer_type: l3leaf
+    description: P2P_LINK_TO_S1-LEAF2_Ethernet2
+    mtu: 9000
+    type: routed
+    shutdown: false
+    ip_address: 10.1.2.8/31
+  Ethernet4:
+    peer: s1-leaf3
+    peer_interface: Ethernet2
+    peer_type: l3leaf
+    description: P2P_LINK_TO_S1-LEAF3_Ethernet2
+    mtu: 9000
+    type: routed
+    shutdown: false
+    ip_address: 10.1.2.16/31
+  Ethernet5:
+    peer: s1-leaf4
+    peer_interface: Ethernet2
+    peer_type: l3leaf
+    description: P2P_LINK_TO_S1-LEAF4_Ethernet2
+    mtu: 9000
+    type: routed
+    shutdown: false
+    ip_address: 10.1.2.24/31
+  Ethernet7:
+    peer: s1-brdr1
+    peer_interface: Ethernet2
+    peer_type: l3leaf
+    description: P2P_LINK_TO_S1-BRDR1_Ethernet2
+    mtu: 9000
+    type: routed
+    shutdown: false
+    ip_address: 10.1.2.32/31
+  Ethernet8:
+    peer: s1-brdr2
+    peer_interface: Ethernet2
+    peer_type: l3leaf
+    description: P2P_LINK_TO_S1-BRDR2_Ethernet2
+    mtu: 9000
+    type: routed
+    shutdown: false
+    ip_address: 10.1.2.40/31
+loopback_interfaces:
+  Loopback0:
+    description: EVPN_Overlay_Peering
+    shutdown: false
+    ip_address: 10.0.0.1/32
+prefix_lists:
+  PL-LOOPBACKS-EVPN-OVERLAY:
+    sequence_numbers:
+      10:
+        action: permit 10.0.0.0/24 eq 32
+route_maps:
+  RM-CONN-2-BGP:
+    sequence_numbers:
+      10:
+        type: permit
+        match:
+        - ip address prefix-list PL-LOOPBACKS-EVPN-OVERLAY
+router_bfd:
+  multihop:
+    interval: 300
+    min_rx: 300
+    multiplier: 3

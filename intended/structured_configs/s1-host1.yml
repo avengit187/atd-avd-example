@@ -1,0 +1,68 @@
+static_routes:
+- vrf: default
+  destination_address_prefix: 0.0.0.0/0
+  gateway: 192.168.0.1
+service_routing_protocols_model: multi-agent
+ip_routing: true
+vlan_internal_order:
+  allocation: ascending
+  range:
+    beginning: 1006
+    ending: 1199
+spanning_tree:
+  mode: mstp
+  mst_instances:
+    '0':
+      priority: 32768
+local_users:
+  arista:
+    privilege: 15
+    role: network-admin
+    sha512_password: $6$4FFVdsOX/1WIH/86$6eYwOGBNE5x4AMFE0CEujICWTJy4kc3jNGGg6GP9PbWcNgGhxHC9rscfjf3d3f797GYpVGaugiUSEmfhVWxls0
+    ssh_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC1yElfRotgcSgF1qY7G3bYOL/M/D3a72Tnrw24FoW58JiPlxCRw+2YofecauC4JimjbBCJobmnnjCBxzwRY64yAXRPd6ChBtqfqXpPbrpnfpcMHIqAyam2FC8t0HgWu5W6iOFvWpjgHKN8UzC3nSyNLMt/x/LYI4uKs1KIn+jIkBumS06VhOtdhUf+zcaj6waTGg1ugr0vWW+a8Reo9bu90ku6dn96/ABgRA+ldA7c1NIeAl6MQUpaWjtsXX/1BDckABJgJf9ZWIRqBaTcJnVjvhmt7T6GO3BKYVX/ykwZu1lQjkqftCY737rIhUAu5fypEegm3GO8tjsRTwuOU3rx
+      arista@bnc-rolex-1-085e5ba3-eos
+vrfs:
+  default:
+    ip_routing: false
+management_interfaces:
+  Management0:
+    description: oob_management
+    shutdown: false
+    vrf: default
+    ip_address: 192.168.0.16/24
+    gateway: 192.168.0.1
+    type: oob
+management_api_http:
+  enable_vrfs:
+    default: {}
+  enable_https: true
+ethernet_interfaces:
+  Ethernet1:
+    peer: s1-leaf1
+    peer_interface: Ethernet4
+    peer_type: l3leaf
+    description: S1-LEAF1_Ethernet4
+    type: switched
+    shutdown: false
+    channel_group:
+      id: 1
+      mode: active
+  Ethernet2:
+    peer: s1-leaf2
+    peer_interface: Ethernet4
+    peer_type: l3leaf
+    description: S1-LEAF2_Ethernet4
+    type: switched
+    shutdown: false
+    channel_group:
+      id: 1
+      mode: active
+port_channel_interfaces:
+  Port-Channel1:
+    description: SITE1_DC_LEAF1_Po4
+    type: switched
+    shutdown: false
+    vlans: none
+    mode: trunk
+ip_igmp_snooping:
+  globally_enabled: true
